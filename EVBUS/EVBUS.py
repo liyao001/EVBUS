@@ -253,8 +253,19 @@ class varU(object):
             # Record average of the $n_{MC}$ predictions
             mean_y_hat[i, :] = np.mean(y_hat, axis=0)
 
+        if self.reg:
+            # Regression
+            theta = np.mean(all_y_hat, axis=0)
+        else:
+            # Classification
+            theta = np.zeros(self.X_test.shape[0])
+
+            for i in range(all_y_hat.shape[1]):
+                tmp = np.unique(all_y_hat[:, i], return_counts=True)
+                max_index = np.argmax(tmp[1])
+                theta[i] = tmp[0][max_index]
+        
         # Compute the variance of the $n_{\tilde{z}}$ averages
-        theta = np.mean(all_y_hat, axis=0)
         m = self.n_MC * self.n_z_sim
         # m = self.n_MC
         alpha = self.n / m
